@@ -69,9 +69,9 @@ mysql_initialize:
 {% endif %}
 
 {% for name, user in percona_settings.db_users.items() %}
-mysql_user_{{ user['user'] or name }}_{{ user['host'] }}:
+mysql_user_{{ user['user']|default(name, true) }}_{{ user['host'] }}:
   mysql_user.present:
-    - name: {{ user['user'] or name }}
+    - name: {{ user['user']|default(name, true) }}
     - host: {{ user['host'] }}
     - password: {{ user['password'] }}
     - connection_pass: {{ percona_settings.get('root_password', '') }}
@@ -82,16 +82,16 @@ mysql_user_{{ user['user'] or name }}_{{ user['host'] }}:
       - mysql_user: mysql_root_password
 {%   endif %}
 {%   for db in user['databases'] %}
-mysql_grant_{{ user['user'] or name }}_{{ user['host'] }}_{{ loop.index0 }}:
+mysql_grant_{{ user['user']|default(name, true) }}_{{ user['host'] }}_{{ loop.index0 }}:
   mysql_grants.present:
     - grant: '{{db['grant']|join(",")}}'
     - database: '{{ db['database'] }}.*'
-    - user: {{ user['user'] or name }}
+    - user: {{ user['user']|default(name, true) }}
     - host: {{ user['host'] }}
     - connection_pass: {{ percona_settings.get('root_password', '') }}
     - grant_option: {{ db['grant_option']|default(False) }}
     - require:
-      - mysql_user: mysql_user_{{ user['user'] or name }}_{{ user['host'] }}
+      - mysql_user: mysql_user_{{ user['user']|default(name, true) }}_{{ user['host'] }}
 
 {%   endfor %}
 {% endfor %}
