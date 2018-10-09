@@ -8,3 +8,5 @@ mysql:
   apply_globals: False
   datadir: /var/lib/mysql
   install_motd: True
+  install_toolkit: False
+  install_utilities: False
