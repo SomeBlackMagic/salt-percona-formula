@@ -37,7 +37,7 @@ extend:
 {%   endfor %}
 {% endif %}
 
-{% for global, value in global_params.iteritems() %}
+{% for global, value in global_params.items() %}
 
 {% if 'tmpdir' in global %}
 {{ value }}:
