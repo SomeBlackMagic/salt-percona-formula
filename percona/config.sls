@@ -20,6 +20,8 @@ extend:
 {%     do global_params.update(percona_settings.config[file].get('mysqld',{})) if file != 'my.cnf' %}
 {%     if file == 'my.cnf' %}
 {%       set filepath = percona_settings.my_cnf_path %}
+{%     elif  file == 'debian.cnf'%}
+{%       set filepath = percona_settings.debian_cnf_path %}
 {%     else %}
 {%       set filepath = percona_settings.config_directory + '/' + file %}
 {%     endif %}
