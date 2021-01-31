@@ -49,7 +49,7 @@ mysql_root_password:
 
 percona_server:
   pkg.installed:
-    - name: {{ percona_settings.server_pkg }}-{{ percona_settings.versionstring }}
+    - name: {{ percona_settings.server_pkg }}{{ percona_settings.versionstring }}
     - require:
 {% for r in repolist %}
       - pkgrepo: {{ r }}

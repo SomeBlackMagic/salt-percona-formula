@@ -7,7 +7,7 @@ include:
 percona_client:
   pkg.installed:
     - pkgs:
-      - {{ percona_settings.client_pkg }}-{{ percona_settings.versionstring }}
+      - {{ percona_settings.client_pkg }}{{ percona_settings.versionstring }}
       - libperconaserverclient20-dev
 
 {% if percona_settings.get('install_toolkit', False) %}
