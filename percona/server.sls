@@ -47,6 +47,14 @@ mysql_root_password:
 {% endif %}
 {% endif %}
 
+{%- if (grains['oscodename'] == 'focal') %}
+percona_server-lib-1:
+  pkg.installed:
+    - sources:
+        - libmysqlclient20: 'salt://percona/files/pkg/libmysqlclient20_5.7.33-1ubuntu18.04_amd64.deb'
+        - python-mysqldb: 'salt://percona/files/pkg/python-mysqldb_1.3.10-1build1_amd64.deb'
+{%- endif %}
+
 percona_server:
   pkg.installed:
     - name: {{ percona_settings.server_pkg }}{{ percona_settings.versionstring }}
