@@ -68,6 +68,17 @@ mysql_initialize:
       - service: percona_svc
 {% endif %}
 
+{%- if percona_settings.databases is defined and percona_settings.databases is not none %}
+  {% for db in percona_settings.databases %}
+mysql_database_{{ db['name'] }}:
+  mysql_database.present:
+    - name: {{ db['name'] }}
+    - character_set: '{{ db["character_set"]|default("utf8mb4") }}'
+    - connection_user: root
+    - connection_pass: {{ percona_settings.get('root_password', '') }}
+  {%- endfor %}
+{%- endif %}
+
 {% for name, user in percona_settings.db_users.items() %}
 mysql_user_{{ name }}_{{ user['host'] }}:
   mysql_user.present:
