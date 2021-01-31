@@ -69,10 +69,10 @@ mysql_initialize:
 {% endif %}
 
 {% for name, user in percona_settings.db_users.items() %}
-mysql_user_{{ user['user']|default(name, true) }}_{{ user['host'] }}:
+mysql_user_{{ name }}_{{ user['host'] }}:
   mysql_user.present:
-    - name: {{ user['user']|default(name, true) }}
-    - host: {{ user['host'] }}
+    - name: '{{ user["user"]|default(name, true) }}'
+    - host: '{{ user["host"] }}'
     - password: {{ user['password'] }}
     - connection_pass: {{ percona_settings.get('root_password', '') }}
     - require:
@@ -84,10 +84,10 @@ mysql_user_{{ user['user']|default(name, true) }}_{{ user['host'] }}:
 {%   for db in user['databases'] %}
 mysql_grant_{{ user['user']|default(name, true) }}_{{ user['host'] }}_{{ loop.index0 }}:
   mysql_grants.present:
-    - grant: '{{db['grant']|join(",")}}'
-    - database: '{{ db['database'] }}.*'
-    - user: {{ user['user']|default(name, true) }}
-    - host: {{ user['host'] }}
+    - grant: '{{db["grant"]|join(",")}}'
+    - database: '{{ db["database"] }}.*'
+    - user: "{{ user['user']|default(name, true) }}"
+    - host: '{{ user["host"] }}'
     - connection_pass: {{ percona_settings.get('root_password', '') }}
     - grant_option: {{ db['grant_option']|default(False) }}
 {%- if 'ssl_option' in db.keys() and db['ssl_option'] is list %}
