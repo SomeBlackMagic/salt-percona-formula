@@ -48,6 +48,7 @@ extend:
       - pkg: percona_server
 {% endif %}
 
+{% if percona_settings.apply_globals %}
 {{ global }}:
   percona.setglobal:
     - value: {{ value }}
@@ -57,4 +58,5 @@ extend:
     - require:
       - service: percona_svc
       - pkg: mysql_python_dep
+{% endif %}
 {% endfor %}

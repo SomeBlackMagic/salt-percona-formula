@@ -49,8 +49,7 @@ mysql_root_password:
 
 percona_server:
   pkg.installed:
-    - name: {{ percona_settings.server_pkg }}{{ percona_settings.versionstring }}
-    - hold: {{ percona_settings.hold_server_pkg }}
+    - name: {{ percona_settings.server_pkg }}-{{ percona_settings.versionstring }}
     - require:
 {% for r in repolist %}
       - pkgrepo: {{ r }}
@@ -70,9 +69,9 @@ mysql_initialize:
 {% endif %}
 
 {% for name, user in percona_settings.db_users.items() %}
-mysql_user_{{ name }}_{{ user['host'] }}:
+mysql_user_{{ user['user']|default(name, true) }}_{{ user['host'] }}:
   mysql_user.present:
-    - name: {{ user['name'] if 'name' in user else name }}
+    - name: {{ user['user']|default(name, true) }}
     - host: {{ user['host'] }}
     - password: {{ user['password'] }}
     - connection_pass: {{ percona_settings.get('root_password', '') }}
@@ -83,11 +82,11 @@ mysql_user_{{ name }}_{{ user['host'] }}:
       - mysql_user: mysql_root_password
 {%   endif %}
 {%   for db in user['databases'] %}
-mysql_grant_{{ name }}_{{ user['host'] }}_{{ loop.index0 }}:
+mysql_grant_{{ user['user']|default(name, true) }}_{{ user['host'] }}_{{ loop.index0 }}:
   mysql_grants.present:
     - grant: '{{db['grant']|join(",")}}'
-    - database: '{{ db['database'] if '.' in db['database'] else db['database'] ~ '.*' }}'
-    - user: {{ user['name'] if 'name' in user else name }}
+    - database: '{{ db['database'] }}.*'
+    - user: {{ user['user']|default(name, true) }}
     - host: {{ user['host'] }}
     - connection_pass: {{ percona_settings.get('root_password', '') }}
     - grant_option: {{ db['grant_option']|default(False) }}
@@ -95,7 +94,7 @@ mysql_grant_{{ name }}_{{ user['host'] }}_{{ loop.index0 }}:
     - ssl_option: {{ db['ssl_option'] | json }}
 {%- endif %}
     - require:
-      - mysql_user: mysql_user_{{ name }}_{{ user['host'] }}
+      - mysql_user: mysql_user_{{ user['user']|default(name, true) }}_{{ user['host'] }}
 
 {%   endfor %}
 {% endfor %}
